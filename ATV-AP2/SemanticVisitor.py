@@ -148,6 +148,24 @@ class NoTupla(Visitor):
     def __repr__(self):
         return f'({", ".join(map(str, self.elements))})'
 
+class NoDict(Visitor):
+    def __init__(self, key_value_pairs):
+        self.key_value_pairs = key_value_pairs  # Lista de pares (chave, valor)
+
+    def visit(self, operator):
+        dict_value = {}
+        for key_node, value_node in self.key_value_pairs:
+            key = operator.registry(key_node.visit(operator))
+            if operator.error: return operator
+            value = operator.registry(value_node.visit(operator))
+            if operator.error: return operator
+            dict_value[key] = value
+        return operator.success(TDict(dict_value).setMemory(operator))
+
+    def __repr__(self):
+        return f"NoDict({self.key_value_pairs})"
+
+
 class NoMethodCall(Visitor):
 	def __init__(self, object_node, method_name, params):
 		self.object_node = object_node

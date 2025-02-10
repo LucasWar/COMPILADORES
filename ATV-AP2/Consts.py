@@ -25,7 +25,9 @@ class Consts:
     RSQUARE   = "]" # Right Box brackets ]
     COMMA     = ","
     POINT     = "."  
-
+    LBRACE    = "{"
+    RBRACE    = "}"
+    COLON     = ":"  
     # Exemplos de Palavras reservadas
     LET         = 'let'
     IF          = 'if'

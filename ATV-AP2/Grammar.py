@@ -136,6 +136,10 @@ class Atom(Grammar): # A variable from Grammar G
             tuplaExp = ast.registry(TuplaExp(self.parser).Rule())
             if (ast.error!=None): return ast
             return ast.success(tuplaExp)
+        elif tok.type == Consts.LBRACE:
+            dictExp = ast.registry(DictExp(self.parser).Rule())
+            if (ast.error!=None): return ast
+            return ast.success(dictExp)
         ##############################
         elif tok.type == Consts.LPAR:
             self.NextToken()
@@ -202,3 +206,43 @@ class TuplaExp(Grammar):
 #####################
 class methodCallExp(Grammar):
     pass
+
+##################################
+class DictExp(Grammar):
+    def Rule(self):
+        ast = self.GetParserManager()
+        self.NextToken()
+        key_value_pairs = []
+
+        if self.CurrentToken().type != Consts.RBRACE:  # Se não for um dicionário vazio '{}'
+            key = ast.registry(Exp(self.parser).Rule())  # Obtém a chave
+            if ast.error: return ast
+
+            if self.CurrentToken().type != Consts.COLON:
+                return ast.fail(f"{Error.parserError}: Esperado ':' após chave do dicionário")
+            
+            self.NextToken()  # Consome ':'
+            value = ast.registry(Exp(self.parser).Rule())  # Obtém o valor
+            if ast.error: return ast
+
+            key_value_pairs.append((key, value))
+
+            while self.CurrentToken().type == Consts.COMMA:  # Processa múltiplos pares chave-valor
+                self.NextToken()
+                key = ast.registry(Exp(self.parser).Rule())
+                if ast.error: return ast
+
+                if self.CurrentToken().type != Consts.COLON:
+                    return ast.fail(f"{Error.parserError}: Esperado ':' após chave do dicionário")
+
+                self.NextToken()
+                value = ast.registry(Exp(self.parser).Rule())
+                if ast.error: return ast
+
+                key_value_pairs.append((key, value))
+
+        if self.CurrentToken().type != Consts.RBRACE:
+            return ast.fail(f"{Error.parserError}: Esperado '}}' para fechar o dicionário")
+
+        self.NextToken()  # Consome '}'
+        return ast.success(NoDict(key_value_pairs))
