@@ -69,7 +69,6 @@ class Lexer:
             elif self.current == Consts.POINT:
                 tokens.append(Token(Consts.POINT))
                 self.__advance()
-            
             elif self.current == Consts.LBRACE:
                 tokens.append(Token(Consts.LBRACE))
                 self.__advance()

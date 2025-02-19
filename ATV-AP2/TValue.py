@@ -59,6 +59,7 @@ class TNumber(TValue):
 		return copy	
 	def __repr__(self):
 		return str(self.value)
+	
 class TString(TValue):
 	def __init__(self, value):
 		self.value = value
@@ -99,6 +100,10 @@ class TList(TValue):
 			self.value.append(other)
 			return self
 	
+	def addIndex(self,other,value):
+		self.value[other.value] = value
+		return self.value
+
 	def getItem(self,other):
 		if(isinstance(other,TNumber)):
 			return self.value[other.value]
@@ -144,8 +149,15 @@ class TDict(TValue):
 		self.memory = memory
 		return self
 	
+	def getItem(self,other):
+		return self.value[other]
+	
+	def addIndex(self,other,value):
+		self.value[other] = value
+		return self.value
+
 	def copy(self):
-		copy = TList(self.value)
+		copy = TDict(self.value)
 		copy.setMemory(self.memory)
 		return copy	
 	

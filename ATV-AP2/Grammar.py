@@ -25,6 +25,7 @@ class Grammar:
 class Exp(Grammar): # A variable from Grammar G
     def Rule(self):
         ast = self.GetParserManager()
+        print(self.CurrentToken())
         if self.CurrentToken().matches(Consts.KEY, Consts.LET):
             self.NextToken()
             if self.CurrentToken().type != Consts.ID:
@@ -40,6 +41,7 @@ class Exp(Grammar): # A variable from Grammar G
                 varName = self.CurrentToken()
                 self.NextToken()
                 return self.varAssign(ast, varName)
+ 
         node = ast.registry(NoOpBinaria.Perform(Term(self.parser), (Consts.PLUS, Consts.MINUS)))
         if ast.error:
             return ast.fail(f"{Error.parserError}: Esperado a '{Consts.INT}', '{Consts.FLOAT}', '{Consts.ID}', '{Consts.LET}', '{Consts.PLUS}', '{Consts.MINUS}', '{Consts.LPAR}'")
@@ -80,50 +82,9 @@ class Atom(Grammar): # A variable from Grammar G
             self.NextToken()
             return ast.success(NoNumber(tok))
         elif tok.type == Consts.ID:
-            self.NextToken()
-            # Verifica se há um ponto "." indicando chamada de método
-            if self.CurrentToken().type == Consts.POINT:
-                self.NextToken()  # Avança para o nome do método
-
-                if self.CurrentToken().type != Consts.ID:
-                    return ast.fail(f"{Error.parserError}: Nome do método esperado após '.'")
-                
-                method_name = self.CurrentToken().value  # Nome do método (ex: "append")
-                self.NextToken()
-
-                if self.CurrentToken().type != Consts.LPAR:
-                    return ast.fail(f"{Error.parserError}: Esperado '(' após nome do método")
-                
-                self.NextToken()  # Avança para os argumentos do método
-                param_nodes = []
-
-                # Processa os parâmetros dentro dos parênteses
-                if self.CurrentToken().type != Consts.RPAR:
-                    param_nodes.append(ast.registry(Exp(self.parser).Rule()))
-                    if ast.error:
-                        return ast
-
-                if self.CurrentToken().type != Consts.RPAR:
-                    return ast.fail(f"{Error.parserError}: Esperado ')' para fechar a chamada de método")
-                
-                self.NextToken()  # Consome ')'
-
-                # Retorna um nó AST (`NoMethodCall`) representando a chamada de método
-                return ast.success(NoMethodCall(NoVarAccess(tok), method_name, param_nodes))
-    
-            if self.CurrentToken().type == Consts.LSQUARE:
-                self.NextToken()
-                if self.CurrentToken().type != Consts.RSQUARE:
-                    index = ast.registry(Exp(self.parser).Rule())
-                    if ast.error:
-                        return ast
-                if self.CurrentToken().type != Consts.RSQUARE:
-                    return ast.fail(f"{Error.parserError}: Esperado ']' após 'INT' ")
-                self.NextToken()
-                return ast.success(NoMethodCall(NoVarAccess(tok), "get", index))
-            # Se não for chamada de método, apenas retorna o acesso à variável
-            return ast.success(NoVarAccess(tok))
-    
+            methodListTuple = ast.registry(MethodListTuple(self.parser).Rule())
+            if (ast.error!=None): return ast
+            return ast.success(methodListTuple)
         elif(tok.type == Consts.STRING):
             self.NextToken()
             return ast.success(NoString(tok))
@@ -246,3 +207,59 @@ class DictExp(Grammar):
 
         self.NextToken()  # Consome '}'
         return ast.success(NoDict(key_value_pairs))
+
+class MethodListTuple(Grammar):
+     def Rule(self):
+        ast = self.GetParserManager()
+        tok = self.CurrentToken()
+        self.NextToken()
+        if self.CurrentToken().type == Consts.POINT:
+            self.NextToken()  # Avança para o nome do método
+            if self.CurrentToken().type != Consts.ID:
+                return ast.fail(f"{Error.parserError}: Nome do método esperado após '.'")
+            
+            method_name = self.CurrentToken().value  # Nome do método (ex: "append")
+            self.NextToken()
+
+            if self.CurrentToken().type != Consts.LPAR:
+                return ast.fail(f"{Error.parserError}: Esperado '(' após nome do método")
+            
+            self.NextToken()  # Avança para os argumentos do método
+            param_nodes = []
+
+            # Processa os parâmetros dentro dos parênteses
+            if self.CurrentToken().type != Consts.RPAR:
+                param_nodes.append(ast.registry(Exp(self.parser).Rule()))
+                if ast.error:
+                    return ast
+
+            if self.CurrentToken().type != Consts.RPAR:
+                return ast.fail(f"{Error.parserError}: Esperado ')' para fechar a chamada de método")
+            
+            self.NextToken()
+            return ast.success(NoMethodCall(NoVarAccess(tok), method_name, param_nodes))
+
+        if self.CurrentToken().type == Consts.LSQUARE:
+            self.NextToken()
+            
+            if self.CurrentToken().type != Consts.RSQUARE:
+                index = ast.registry(Exp(self.parser).Rule())
+                if ast.error:
+                    return ast
+
+            if self.CurrentToken().type != Consts.RSQUARE:
+                return ast.fail(f"{Error.parserError}: Esperado ']' após 'INT' ")
+            
+
+            self.NextToken()
+
+            if self.CurrentToken().type == Consts.EQ:
+                self.NextToken()
+                value = self.CurrentToken().value
+                self.NextToken()
+                return ast.success(NoMethodCall(NoVarAccess(tok),"addIndex",index,value))
+            
+
+            return ast.success(NoMethodCall(NoVarAccess(tok), "get", index))
+        return ast.success(NoVarAccess(tok))
+     

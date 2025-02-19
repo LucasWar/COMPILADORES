@@ -167,30 +167,37 @@ class NoDict(Visitor):
 
 
 class NoMethodCall(Visitor):
-	def __init__(self, object_node, method_name, params):
-		self.object_node = object_node
-		self.method_name = method_name
-		self.params = params
+    def __init__(self, object_node, method_name, params, value = None):
+        self.object_node = object_node
+        self.method_name = method_name
+        self.params = params
+        self.value = value
+    def visit(self, operator):
+        obj = operator.registry(self.object_node.visit(operator))
+        if operator.error: return operator
 
-	def visit(self, operator):
-		obj = operator.registry(self.object_node.visit(operator))
-		if operator.error: return operator
+        if isinstance(obj, TList) or isinstance(obj, TTuple) or isinstance(obj, TDict):
+            if self.method_name == "append" and isinstance(obj, TList):
+                if len(self.params) != 1:
+                    return operator.fail(Error("Metodo 'append' recebe exatamente 1 argumento"))
+                value = operator.registry(self.params[0].visit(operator))
+                if operator.error: return operator
+                obj.appendItem(value)
+                return operator.success(obj)
+                
+            if self.method_name == "get":
+                chave = operator.registry(self.params.visit(operator))
+                if operator.error: return operator
+                valor = obj.getItem(chave)
+                return operator.success(valor)
+            
+            if self.method_name == "addIndex":
+                chave = operator.registry(self.params.visit(operator))
+                if operator.error: return operator
+                valor = obj.addIndex(chave,self.value)
+                return operator.success(valor)
+            
+        return operator.fail(Error(f"Metodo '{self.method_name}' nao encontrado para o tipo {type(obj).__name__}"))
 
-		if isinstance(obj, TList) or isinstance(obj, TTuple):
-			if self.method_name == "append" and isinstance(obj, TList):
-				if len(self.params) != 1:
-					return operator.fail(Error("Metodo 'append' recebe exatamente 1 argumento"))
-				value = operator.registry(self.params[0].visit(operator))
-				if operator.error: return operator
-				obj.appendItem(value)
-				return operator.success(obj)
-				
-			if self.method_name == "get":
-				chave = operator.registry(self.params.visit(operator))
-				if operator.error: return operator
-				valor = obj.getItem(chave)
-				return operator.success(valor)
-		return operator.fail(Error(f"Metodo '{self.method_name}' nao encontrado para o tipo {type(obj).__name__}"))
-
-	def __repr__(self):
-		return f"MethodCall({self.method_name}, {self.params})"
+    def __repr__(self):
+        return f"MethodCall({self.method_name}, {self.params})"
