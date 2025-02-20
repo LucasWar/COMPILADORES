@@ -197,6 +197,14 @@ class NoMethodCall(Visitor):
                 valor = obj.addIndex(chave,self.value)
                 return operator.success(valor)
             
+            if self.method_name == "remove":
+                if len(self.params) != 1:
+                    return operator.fail(Error("Metodo 'remove' recebe exatamente 1 argumento"))
+                value = operator.registry(self.params[0].visit(operator))
+                if operator.error: return operator
+                obj.removeItem(value)
+                return operator.success(obj)
+            
         return operator.fail(Error(f"Metodo '{self.method_name}' nao encontrado para o tipo {type(obj).__name__}"))
 
     def __repr__(self):

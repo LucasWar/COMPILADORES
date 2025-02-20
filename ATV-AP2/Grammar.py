@@ -25,7 +25,6 @@ class Grammar:
 class Exp(Grammar): # A variable from Grammar G
     def Rule(self):
         ast = self.GetParserManager()
-        print(self.CurrentToken())
         if self.CurrentToken().matches(Consts.KEY, Consts.LET):
             self.NextToken()
             if self.CurrentToken().type != Consts.ID:
@@ -41,7 +40,7 @@ class Exp(Grammar): # A variable from Grammar G
                 varName = self.CurrentToken()
                 self.NextToken()
                 return self.varAssign(ast, varName)
- 
+
         node = ast.registry(NoOpBinaria.Perform(Term(self.parser), (Consts.PLUS, Consts.MINUS)))
         if ast.error:
             return ast.fail(f"{Error.parserError}: Esperado a '{Consts.INT}', '{Consts.FLOAT}', '{Consts.ID}', '{Consts.LET}', '{Consts.PLUS}', '{Consts.MINUS}', '{Consts.LPAR}'")

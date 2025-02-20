@@ -39,4 +39,3 @@ class Consts:
         WHILE,
         FOR
     ]
-

@@ -100,6 +100,12 @@ class TList(TValue):
 			self.value.append(other)
 			return self
 	
+	def removeItem(self,other):
+		if(isinstance(other,TNumber)):
+			remover = self.value[other.value]
+			self.value.remove(remover)
+			return self
+
 	def addIndex(self,other,value):
 		self.value[other.value] = value
 		return self.value
@@ -152,6 +158,10 @@ class TDict(TValue):
 	def getItem(self,other):
 		return self.value[other]
 	
+	def removeItem(self,other):
+		self.value.pop(other)
+		return self
+
 	def addIndex(self,other,value):
 		self.value[other] = value
 		return self.value
