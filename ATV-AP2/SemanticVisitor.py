@@ -78,7 +78,18 @@ class NoOpBinaria(Visitor):
             result, error = esq.div(dir)
         elif self.opTok.type == Consts.POW:
             result, error = esq.pow(dir)
-
+        elif self.opTok.type == Consts.EQUALS:
+            result, error = esq.equals(dir)
+        elif self.opTok.type == Consts.LT:
+            result, error = esq.lt(dir)
+        elif self.opTok.type == Consts.GT:
+            result, error = esq.gt(dir)
+        elif self.opTok.type == Consts.NEQ:
+            result, error = esq.neq(dir)
+        elif self.opTok.type == Consts.LTE:
+            result, error = esq.lte(dir)
+        elif self.opTok.type == Consts.GTE:
+            result, error = esq.gte(dir)
         if error:
             return operator.fail(error)
         else:

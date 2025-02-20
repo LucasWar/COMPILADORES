@@ -39,3 +39,23 @@ class Consts:
         WHILE,
         FOR
     ]
+    
+    TRUE      = "true"
+    FALSE     = "false"
+    AND       = "&&"
+    OR        = "||"
+    NOT       = "!"
+
+    EQUALS    = "=="
+    NEQ       = "!="
+    LT        = "<"
+    LTE       = "<="
+    GT        = ">"
+    GTE       = ">="
+
+    BOOLS      = [
+        TRUE,
+        FALSE
+    ]
+
+    BOOL = "bool"

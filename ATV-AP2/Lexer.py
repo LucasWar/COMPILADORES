@@ -64,7 +64,11 @@ class Lexer:
                 tokens.append(Token(Consts.COMMA))
                 self.__advance()
             elif self.current == Consts.EQ:
-                tokens.append(Token(Consts.EQ))
+                if self.code[self.indice + 1] == '=':
+                    tokens.append(Token(Consts.EQUALS))
+                    self.__advance()
+                else:
+                    tokens.append(Token(Consts.EQ))
                 self.__advance()
             elif self.current == Consts.POINT:
                 tokens.append(Token(Consts.POINT))
@@ -78,41 +82,27 @@ class Lexer:
             elif self.current == Consts.COLON:
                 tokens.append(Token(Consts.COLON))
                 self.__advance()
-            elif self.current == Consts.AND and self.code[self.indice + 1] == Consts.AND:
-                tokens.append(Token(Consts.AND))
-                self.__advance(); self.__advance()
-
-            elif self.current == Consts.OR and self.code[self.indice + 1] == Consts.OR:
-                tokens.append(Token(Consts.OR))
-                self.__advance(); self.__advance()
-
-            elif self.current == Consts.NOT:
-                tokens.append(Token(Consts.NOT))
-                self.__advance()
-
-            elif self.current == '=' and self.code[self.indice + 1] == '=':
-                tokens.append(Token(Consts.EQUALS))
-                self.__advance(); self.__advance()
-
-            elif self.current == '!' and self.code[self.indice + 1] == '=':
-                tokens.append(Token(Consts.NEQ))
-                self.__advance(); self.__advance()
-
-            elif self.current == '<':
+            elif self.current == Consts.LT:
                 if self.code[self.indice + 1] == '=':
                     tokens.append(Token(Consts.LTE))
                     self.__advance()
                 else:
                     tokens.append(Token(Consts.LT))
-                self.__advance()
-
-            elif self.current == '>':
+                self.__advance()   
+            elif self.current == Consts.GT:
                 if self.code[self.indice + 1] == '=':
                     tokens.append(Token(Consts.GTE))
                     self.__advance()
                 else:
                     tokens.append(Token(Consts.GT))
-                self.__advance()
+                self.__advance()   
+            elif self.current == Consts.NOT:
+                if self.code[self.indice + 1] == '=':
+                    tokens.append(Token(Consts.NEQ))
+                    self.__advance()
+                else:
+                    tokens.append(Token(Consts.NOT))
+                self.__advance()    
             ##############################
             else:
                 self.__advance()
@@ -164,7 +154,7 @@ class Lexer:
         while self.current != None and self.current in Consts.LETRAS_DIGITOS + Consts.UNDER:
             lexema += self.current
             self.__advance()
-            
-            tokType = Consts.KEY if lexema in Consts.KEYS else Consts.ID
+        
+        tokType = Consts.KEY if lexema in Consts.KEYS else Consts.ID
         return Token(tokType, lexema)
     ##############################

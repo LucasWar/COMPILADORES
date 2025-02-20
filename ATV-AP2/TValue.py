@@ -57,6 +57,37 @@ class TNumber(TValue):
 		copy = TNumber(self.value)
 		copy.setMemory(self.memory)
 		return copy	
+	
+	def equals(self, other):
+		if isinstance(other, TNumber):
+			return TNumber(self.value == other.value).setMemory(self.memory), None
+		return super().pow(other)
+
+	def gt(self, other):
+		if isinstance(other, TNumber):
+			return TNumber(self.value > other.value).setMemory(self.memory), None
+		return super().pow(other)
+
+	def lt(self, other):
+		if isinstance(other, TNumber):
+			return TNumber(self.value < other.value).setMemory(self.memory), None
+		return super().pow(other)
+
+	def neq(self, other):
+		if isinstance(other, TNumber):
+			return TNumber(self.value != other.value).setMemory(self.memory), None
+		return super().pow(other)
+
+	def lte(self, other):
+		if isinstance(other, TNumber):
+			return TNumber(self.value <= other.value).setMemory(self.memory), None
+		return super().pow(other)
+
+	def gte(self, other):
+		if isinstance(other, TNumber):
+			return TNumber(self.value >= other.value).setMemory(self.memory), None
+		return super().pow(other)
+
 	def __repr__(self):
 		return str(self.value)
 	

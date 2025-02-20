@@ -40,8 +40,10 @@ class Exp(Grammar): # A variable from Grammar G
                 varName = self.CurrentToken()
                 self.NextToken()
                 return self.varAssign(ast, varName)
+            
+        if self.CurrentToken().type == Consts.INT:
+            node = ast.registry(NoOpBinaria.Perform(Term(self.parser), (Consts.PLUS, Consts.MINUS, Consts.EQUALS, Consts.LT, Consts.GT, Consts.NEQ, Consts.LTE, Consts.GTE)))
 
-        node = ast.registry(NoOpBinaria.Perform(Term(self.parser), (Consts.PLUS, Consts.MINUS)))
         if ast.error:
             return ast.fail(f"{Error.parserError}: Esperado a '{Consts.INT}', '{Consts.FLOAT}', '{Consts.ID}', '{Consts.LET}', '{Consts.PLUS}', '{Consts.MINUS}', '{Consts.LPAR}'")
         return ast.success(node)
