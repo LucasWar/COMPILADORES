@@ -40,8 +40,8 @@ class Consts:
         FOR
     ]
     
-    TRUE      = "true"
-    FALSE     = "false"
+    TRUE      = "True"
+    FALSE     = "False"
     AND       = "&&"
     OR        = "||"
     NOT       = "!"

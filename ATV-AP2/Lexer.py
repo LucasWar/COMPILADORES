@@ -102,7 +102,12 @@ class Lexer:
                     self.__advance()
                 else:
                     tokens.append(Token(Consts.NOT))
-                self.__advance()    
+                self.__advance()   
+            elif self.current == "&":
+                if self.code[self.indice + 1] == '&':
+                    tokens.append(Token(Consts.AND))
+                    self.__advance()
+                self.__advance()
             ##############################
             else:
                 self.__advance()
@@ -154,7 +159,9 @@ class Lexer:
         while self.current != None and self.current in Consts.LETRAS_DIGITOS + Consts.UNDER:
             lexema += self.current
             self.__advance()
-        
-        tokType = Consts.KEY if lexema in Consts.KEYS else Consts.ID
+        if lexema in Consts.BOOLS:
+            tokType = Consts.BOOL
+        else:
+            tokType = Consts.KEY if lexema in Consts.KEYS else Consts.ID
         return Token(tokType, lexema)
     ##############################

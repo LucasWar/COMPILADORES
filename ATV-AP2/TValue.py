@@ -60,32 +60,32 @@ class TNumber(TValue):
 	
 	def equals(self, other):
 		if isinstance(other, TNumber):
-			return TNumber(self.value == other.value).setMemory(self.memory), None
+			return TBoolean(self.value == other.value).setMemory(self.memory), None
 		return super().pow(other)
 
 	def gt(self, other):
 		if isinstance(other, TNumber):
-			return TNumber(self.value > other.value).setMemory(self.memory), None
+			return TBoolean(self.value > other.value).setMemory(self.memory), None
 		return super().pow(other)
 
 	def lt(self, other):
 		if isinstance(other, TNumber):
-			return TNumber(self.value < other.value).setMemory(self.memory), None
+			return TBoolean(self.value < other.value).setMemory(self.memory), None
 		return super().pow(other)
 
 	def neq(self, other):
 		if isinstance(other, TNumber):
-			return TNumber(self.value != other.value).setMemory(self.memory), None
+			return TBoolean(self.value != other.value).setMemory(self.memory), None
 		return super().pow(other)
 
 	def lte(self, other):
 		if isinstance(other, TNumber):
-			return TNumber(self.value <= other.value).setMemory(self.memory), None
+			return TBoolean(self.value <= other.value).setMemory(self.memory), None
 		return super().pow(other)
 
 	def gte(self, other):
 		if isinstance(other, TNumber):
-			return TNumber(self.value >= other.value).setMemory(self.memory), None
+			return TBoolean(self.value >= other.value).setMemory(self.memory), None
 		return super().pow(other)
 
 	def __repr__(self):
@@ -204,3 +204,41 @@ class TDict(TValue):
 	
 	def __repr__(self):
 		return f"{str(self.value)}"
+	
+class TBoolean(TValue):
+	def __init__(self, value):
+		self.value = Consts.TRUE if Consts.TRUE == str(value) else Consts.FALSE;  # Garante que o valor sempre seja booleano
+		self.memory = None  # Inicializa a memória
+
+	def copy(self):
+		copy = TBoolean(self.value)
+		copy.setMemory(self.memory)
+		return copy
+
+	def setMemory(self, memory=None):
+		self.memory = memory  # Mantém o objeto original sem conversão para booleano
+		return self
+
+	def equals(self, other):
+		if isinstance(other, TBoolean):
+			return TBoolean(self.value == other.value).setMemory(self.memory), None
+		return None, "Erro: Comparação inválida com tipo diferente"
+	
+	def and_op(self, other):
+		print(self.value)
+		print(other.value)
+		if isinstance(other, TBoolean):
+			
+			return TBoolean(self.value and other.value).setMemory(self.memory), None
+		return None, "Erro: Operação 'and' inválida com tipo diferente"
+
+	def or_op(self, other):
+		if isinstance(other, TBoolean):
+			return TBoolean(self.value or other.value).setMemory(self.memory), None
+		return None, "Erro: Operação 'or' inválida com tipo diferente"
+	
+	def __repr__(self):
+		return f"TBoolean({self.value})"  # Representação para depuração
+
+	def __str__(self):
+		return str(self.value)  # Representação amigável para print()

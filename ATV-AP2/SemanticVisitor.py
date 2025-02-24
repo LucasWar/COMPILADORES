@@ -90,6 +90,8 @@ class NoOpBinaria(Visitor):
             result, error = esq.lte(dir)
         elif self.opTok.type == Consts.GTE:
             result, error = esq.gte(dir)
+        elif self.opTok.type == Consts.AND:
+            result, error = esq.and_op(dir)
         if error:
             return operator.fail(error)
         else:
@@ -220,3 +222,14 @@ class NoMethodCall(Visitor):
 
     def __repr__(self):
         return f"MethodCall({self.method_name}, {self.params})"
+
+
+class NoBoolean(Visitor):
+    def __init__(self, tok):
+        self.tok = tok  # Token armazenando o valor booleano
+
+    def visit(self, operator):
+        return operator.success(TBoolean(self.tok.value).setMemory(operator))  # Criando um nó booleano
+
+    def __repr__(self):
+        return f'{self.tok.value}'

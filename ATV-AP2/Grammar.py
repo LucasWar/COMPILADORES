@@ -41,8 +41,8 @@ class Exp(Grammar): # A variable from Grammar G
                 self.NextToken()
                 return self.varAssign(ast, varName)
             
-        if self.CurrentToken().type == Consts.INT:
-            node = ast.registry(NoOpBinaria.Perform(Term(self.parser), (Consts.PLUS, Consts.MINUS, Consts.EQUALS, Consts.LT, Consts.GT, Consts.NEQ, Consts.LTE, Consts.GTE)))
+        
+        node = ast.registry(NoOpBinaria.Perform(Term(self.parser), (Consts.PLUS, Consts.MINUS, Consts.EQUALS, Consts.LT, Consts.GT, Consts.NEQ, Consts.LTE, Consts.GTE,Consts.AND)))
 
         if ast.error:
             return ast.fail(f"{Error.parserError}: Esperado a '{Consts.INT}', '{Consts.FLOAT}', '{Consts.ID}', '{Consts.LET}', '{Consts.PLUS}', '{Consts.MINUS}', '{Consts.LPAR}'")
@@ -78,7 +78,7 @@ class Atom(Grammar): # A variable from Grammar G
     def Rule(self):
         ast = self.GetParserManager()
         tok = self.CurrentToken()
-        
+
         if tok.type in (Consts.INT, Consts.FLOAT):
             self.NextToken()
             return ast.success(NoNumber(tok))
@@ -90,6 +90,9 @@ class Atom(Grammar): # A variable from Grammar G
             self.NextToken()
             return ast.success(NoString(tok))
         ##############################
+        elif tok.type == Consts.BOOL:
+            self.NextToken()
+            return ast.success(NoBoolean(tok))
         elif tok.type == Consts.LSQUARE:
             listExp = ast.registry(ListExp(self.parser).Rule())
             if (ast.error!=None): return ast
