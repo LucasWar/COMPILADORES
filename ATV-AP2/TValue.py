@@ -206,6 +206,9 @@ class TDict(TValue):
 		return f"{str(self.value)}"
 	
 class TBoolean(TValue):
+	def string_to_bool(self,s):
+		return {"true": True, "false": False}.get(s.lower(), None)
+
 	def __init__(self, value):
 		self.value = Consts.TRUE if Consts.TRUE == str(value) else Consts.FALSE;  # Garante que o valor sempre seja booleano
 		self.memory = None  # Inicializa a memória
@@ -225,16 +228,13 @@ class TBoolean(TValue):
 		return None, "Erro: Comparação inválida com tipo diferente"
 	
 	def and_op(self, other):
-		print(self.value)
-		print(other.value)
-		if isinstance(other, TBoolean):
-			
-			return TBoolean(self.value and other.value).setMemory(self.memory), None
+		if isinstance(other, TBoolean):	
+			return TBoolean(self.string_to_bool(self.value) and self.string_to_bool(other.value)).setMemory(self.memory), None
 		return None, "Erro: Operação 'and' inválida com tipo diferente"
 
 	def or_op(self, other):
 		if isinstance(other, TBoolean):
-			return TBoolean(self.value or other.value).setMemory(self.memory), None
+			return TBoolean(self.string_to_bool(self.value) or self.string_to_bool(other.value)).setMemory(self.memory), None
 		return None, "Erro: Operação 'or' inválida com tipo diferente"
 	
 	def __repr__(self):

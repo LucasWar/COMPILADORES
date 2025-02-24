@@ -108,6 +108,11 @@ class Lexer:
                     tokens.append(Token(Consts.AND))
                     self.__advance()
                 self.__advance()
+            elif self.current == "|":
+                if self.code[self.indice + 1] == '|':
+                    tokens.append(Token(Consts.OR))
+                    self.__advance()
+                self.__advance()
             ##############################
             else:
                 self.__advance()

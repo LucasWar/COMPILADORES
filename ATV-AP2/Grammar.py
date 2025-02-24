@@ -42,7 +42,7 @@ class Exp(Grammar): # A variable from Grammar G
                 return self.varAssign(ast, varName)
             
         
-        node = ast.registry(NoOpBinaria.Perform(Term(self.parser), (Consts.PLUS, Consts.MINUS, Consts.EQUALS, Consts.LT, Consts.GT, Consts.NEQ, Consts.LTE, Consts.GTE,Consts.AND)))
+        node = ast.registry(NoOpBinaria.Perform(Relational(self.parser), (Consts.AND,Consts.OR)))
 
         if ast.error:
             return ast.fail(f"{Error.parserError}: Esperado a '{Consts.INT}', '{Consts.FLOAT}', '{Consts.ID}', '{Consts.LET}', '{Consts.PLUS}', '{Consts.MINUS}', '{Consts.LPAR}'")
@@ -53,6 +53,14 @@ class Exp(Grammar): # A variable from Grammar G
         expr = ast.registry(Exp(self.parser).Rule())
         if ast.error: return ast
         return ast.success(NoVarAssign(varName, expr))
+
+class Relational(Grammar):
+    def Rule(self):
+        return NoOpBinaria.Perform(AddSub(self.parser), (Consts.EQUALS,Consts.LT, Consts.GT, Consts.NEQ, Consts.LTE, Consts.GTE))
+
+class AddSub(Grammar):
+    def Rule(self):
+        return NoOpBinaria.Perform(Term(self.parser), (Consts.MINUS,Consts.PLUS))
     
 class Term(Grammar): # A variable from Grammar G
     def Rule(self):
